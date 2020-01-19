@@ -1,6 +1,6 @@
-import React, { useState, useRef, Fragment } from "react";
+import React, { useState, useRef, Fragment, useEffect } from "react";
 import useSwr from "swr";
-import ReactMapGL, { Marker, FlyToInterpolator } from "react-map-gl";
+import ReactMapGL, { Marker, FlyToInterpolator, Popup } from "react-map-gl";
 import useSupercluster from "use-supercluster";
 import "./App.css";
 import policeData from "./data/police.json";
@@ -48,6 +48,7 @@ export default function App() {
     zoom: viewport.zoom,
     options: { radius: 75, maxZoom: 20 }
   });
+  const [selectedPoliceStation, setSelectedPoliceStation] = useState(null);
 
   return (
     <div>
@@ -117,30 +118,31 @@ export default function App() {
                 <button className="crime-marker" onClick={e => {
                   e.preventDefault();
                   console.log(cluster.properties);
+                  setSelectedPoliceStation(cluster);
                 }}>
                   <img src="/police.svg" alt="crime doesn't pay" />
                 </button>
               </Marker>
-              {/* {
-                selectedPark ? (
+              {
+                selectedPoliceStation ? (
                   <Popup
-                    latitude={selectedPark.geometry.coordinates[1]}
-                    longitude={selectedPark.geometry.coordinates[0]}
+                    latitude={selectedPoliceStation.geometry.coordinates[1]}
+                    longitude={selectedPoliceStation.geometry.coordinates[0]}
                     onClose={() => {
-                      setSelectedPark(null);
+                      setSelectedPoliceStation(null);
                     }}
                   >
                     <div>
-                      <h2>{selectedPark.properties.NAME}</h2>
-                      <p>{selectedPark.properties.DESCRIPTIO}</p>
+                      <h2>{selectedPoliceStation.properties.stationName}</h2>
+                      <p>{selectedPoliceStation.properties.stationAddress}</p>
                     </div>
                   </Popup>
                 ) : null
-              } */}
+              }
             </Fragment>
           );
         })}
-        Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+        <p className="sponsor">Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></p>
       </ReactMapGL>
     </div>
   );

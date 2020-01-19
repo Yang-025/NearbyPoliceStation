@@ -17,3 +17,14 @@
 .crime-marker img {
   width: 25px;
 }
+
+.sponsor {
+  position: absolute;
+  /* pointer-events: none; */
+  right: 0px;
+  bottom: 10px;
+  padding: 0 5px;
+  background-color: hsla(0, 0%, 100%, 0.5);
+  color: rgba(0, 0, 0, 0.75);
+  text-decoration: none;
+}
