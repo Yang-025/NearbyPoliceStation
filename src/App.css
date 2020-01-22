@@ -28,3 +28,8 @@
   color: rgba(0, 0, 0, 0.75);
   text-decoration: none;
 }
+
+
+.where-am-i img {
+  width: 25px;
+}

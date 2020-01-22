@@ -9,17 +9,45 @@ const fetcher = (...args) => fetch(...args).then(response => response.json());
 
 export default function App() {
   const [viewport, setViewport] = useState({
-    // latitude: 52.6376,
-    // longitude: -1.135171,
     latitude: 23.697809,
     longitude: 120.960518,
     width: "100vw",
     height: "100vh",
-    // width: 400,
-    // height: 400,
     zoom: 7
   });
   const mapRef = useRef();
+
+  const [position, setPosition] = useState({ latitude: null, longitude: null });
+  const getCurrentPosition = () => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude, longitude } = position.coords;
+      console.log('latitude, longitude', latitude, longitude);
+      setPosition({ latitude, longitude });
+      setViewport((prev) => ({
+        ...prev,
+        latitude,
+        longitude,
+        transitionInterpolator: new FlyToInterpolator({
+          speed: 2
+        }),
+        transitionDuration: "auto",
+        zoom: 15
+      }))
+    });
+  };
+
+  // useEffect(() => {
+  //   const geo = navigator.geolocation;
+  //   if (!geo) {
+  //     console.log("Geolocation is not supported");
+  //     return;
+  //   }
+  //   getCurrentPosition();
+  // }, []);
 
   // const points = [policeData.find(x => x.id === 1288)].map(police => ({
   const points = policeData.map(police => ({
@@ -63,8 +91,6 @@ export default function App() {
         mapStyle="mapbox://styles/kkadso/ck5kb9pij0j5x1iqi41c6hd12"
       >
         {clusters.map(cluster => {
-          console.log('cluster', cluster);
-          // const [latitude, longitude] = cluster.geometry.coordinates;
           const [longitude, latitude] = cluster.geometry.coordinates;
           const {
             cluster: isCluster,
@@ -117,7 +143,6 @@ export default function App() {
               >
                 <button className="crime-marker" onClick={e => {
                   e.preventDefault();
-                  console.log(cluster.properties);
                   setSelectedPoliceStation(cluster);
                 }}>
                   <img src="/police.svg" alt="crime doesn't pay" />
@@ -142,6 +167,15 @@ export default function App() {
             </Fragment>
           );
         })}
+        {position.latitude && position.longitude && <Marker
+          key="where-am-i"
+          className="where-am-i"
+          latitude={position.latitude}
+          longitude={position.longitude}
+        >
+          <img src="/custody.svg" alt="crime doesn't pay" />
+        </Marker>}
+        <button onClick={getCurrentPosition}>Get Current Position</button>
         <p className="sponsor">Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></p>
       </ReactMapGL>
     </div>

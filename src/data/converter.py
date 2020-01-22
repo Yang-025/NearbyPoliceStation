@@ -13,7 +13,9 @@ script_dir = os.path.dirname(__file__)
 file_path = os.path.join(script_dir, './PoliceAddress1_1081230.csv')
 output_file_path = os.path.join(script_dir, './police.json')
 
-
+list_of_zip_code = ['880', '881', '882', '883', '884', '885',
+                    '890', '891', '892', '893', '894', '896',
+                    '209', '210', '211', '212']
 data = []
 with open(file_path, newline='') as csvfile:
     # 以冒號分隔欄位，讀取檔案內容
@@ -22,7 +24,6 @@ with open(file_path, newline='') as csvfile:
     headers = next(myCsv)
     # for row in myCsv:
     for idx, row in enumerate(myCsv):
-        # print(row)
         utm_coordinates_list = list(map(float, row[-2:]))
         # 轉出來有片差。要提供zon_letter，但是台灣橫跨三區。改用pyproj轉
         # latlon = utm.to_latlon(
@@ -32,10 +33,16 @@ with open(file_path, newline='') as csvfile:
         EPSG:3826 --> 台灣本島 TM2, TWD97 二度分帶 (X 原點在東經 120 度)
         EPSG:4326 --> WGS84 經緯度
         '''
+        # if row[2] in list_of_zip_code:
+        #     latlon = transform(
+        #         3825, 4326, utm_coordinates_list[0], utm_coordinates_list[1])
+        # else:
+        #     latlon = transform(
+        #         3826, 4326, utm_coordinates_list[0], utm_coordinates_list[1])
+
         latlon = transform(
             3826, 4326, utm_coordinates_list[0], utm_coordinates_list[1])
-        # print(latlon[0])
-        # print(latlon[1])
+
         data.append({
             'id': idx,
             'name': row[0],
